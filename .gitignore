@@ -1,0 +1,25 @@
+# Agents
+.agents/
+
+# Ansible Secrets & Keys
+vault.yml
+group_vars/all/vault.yml
+*.vault
+.vault-pass*
+.vault_pass*
+*.key
+*.pem
+id_*
+!*.example
+
+# Ansible Depenendcy files
+.ansible/
+
+# Ansible Retry Files & Logs
+*.retry
+ansible.log
+
+# IDEs & System Files
+.vscode/
+.DS_Store
+Thumbs.db
