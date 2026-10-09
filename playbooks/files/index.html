@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Página HTML moderna, semántica y con diseño estilizado">
+  <title>Mi Portafolio</title>
+
+  <!-- Tipografía moderna (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.4);
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --accent: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.25rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Brillo ambiental de fondo */
+    .glow-bg {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(600px, 90vw);
+      height: min(600px, 90vw);
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.1) 40%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Tarjeta principal */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: clamp(2rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before,
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-5px);
+      box-shadow: 0 25px 55px -10px rgba(99, 102, 241, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .card:hover::before,
+    .contact-card:hover::before {
+      opacity: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #818cf8;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 9999px;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Grilla de características */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+      text-align: left;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      transition: all 0.25s ease;
+    }
+
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: #f1f5f9;
+    }
+
+    .feature-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Encabezados de sección */
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Sección de Contacto */
+    .contact-section {
+      width: 100%;
+      margin-bottom: 3.5rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .contact-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-5px);
+      box-shadow: 0 18px 35px -8px rgba(99, 102, 241, 0.25);
+    }
+
+    .contact-logo-box {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .contact-card:hover .contact-logo-box {
+      transform: scale(1.08);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .contact-logo {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .contact-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.3rem;
+    }
+
+    .contact-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .contact-card:hover .contact-action {
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    /* Sección de Trabajos / Proyectos */
+    .projects-section {
+      width: 100%;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .project-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px -8px rgba(99, 102, 241, 0.25);
+    }
+
+    .project-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      background-color: #111827;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .project-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.4s ease;
+    }
+
+    .project-card:hover .project-img {
+      transform: scale(1.04);
+    }
+
+    .project-category-tag {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .tag-frontend {
+      background: rgba(99, 102, 241, 0.85);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+
+    .tag-backend {
+      background: rgba(168, 85, 247, 0.85);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+    }
+
+    .project-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .project-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .project-description {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .project-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      text-decoration: none;
+      word-break: break-all;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .project-link:hover {
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    .project-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .project-btn:hover {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    /* Botón Interactivo */
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 20px -4px var(--primary-glow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -2px var(--primary-glow);
+      filter: brightness(1.08);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .counter-badge {
+      background: rgba(255, 255, 255, 0.25);
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Optimizaciones responsivas para móviles */
+    @media (max-width: 640px) {
+      body {
+        padding: 1.25rem 0.85rem;
+      }
+
+      .card {
+        padding: 2rem 1.25rem;
+        margin-bottom: 2.25rem;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .project-img-wrapper {
+        height: 180px;
+      }
+
+      .project-body {
+        padding: 1.25rem;
+      }
+
+      .project-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+
+      .project-link {
+        justify-content: center;
+      }
+
+      .project-btn {
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="glow-bg"></div>
+
+  <main class="container">
+    <div class="card">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        HTML5 + CSS3 Moderno
+      </div>
+
+      <h1>Hola, <span class="highlight">Mundo</span></h1>
+
+      <p class="subtitle">
+        Plantilla simple, limpia y moderna para empezar tus proyectos web con excelente diseño.
+      </p>
+
+      <section class="features">
+        <div class="feature-item">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Estructura Limpia</div>
+          <p class="feature-desc">HTML semántico y optimizado para navegadores.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">🎨</div>
+          <div class="feature-title">Diseño Elegante</div>
+          <p class="feature-desc">Efecto translúcido, gradientes y modo oscuro.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Responsivo</div>
+          <p class="feature-desc">Adaptable a pantallas móviles y escritorio.</p>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="btn-interact" class="btn" type="button">
+          <span>¡Haz clic aquí!</span>
+          <span id="click-counter" class="counter-badge">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sección de Contacto -->
+    <section class="contact-section">
+      <div class="section-header">
+        <h2>Ponte en <span class="highlight">Contacto</span></h2>
+        <p>Conéctate conmigo a través de mis canales y redes profesionales</p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/in/josedr-it" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <div class="contact-logo-box">
+            <img src="assets/Linkedin.png" alt="Logo de LinkedIn" class="contact-logo" loading="lazy">
+          </div>
+          <h3 class="contact-title">LinkedIn</h3>
+          <p class="contact-desc">in/josedr-it</p>
+          <span class="contact-action">Conectar ↗</span>
+        </a>
+
+        <!-- WhatsApp -->
+        <a href="https://wa.me/+573152616672" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <div class="contact-logo-box">
+            <img src="assets/Whatsapp.png" alt="Logo de WhatsApp" class="contact-logo" loading="lazy">
+          </div>
+          <h3 class="contact-title">WhatsApp</h3>
+          <p class="contact-desc">+57 315 261 6672</p>
+          <span class="contact-action">Escribir ↗</span>
+        </a>
+
+        <!-- Email -->
+        <a href="mailto:camiseta80@gmail.com" class="contact-card">
+          <div class="contact-logo-box">
+            <img src="assets/Mail.webp" alt="Logo de Email" class="contact-logo" loading="lazy">
+          </div>
+          <h3 class="contact-title">Correo</h3>
+          <p class="contact-desc">camiseta80@gmail.com</p>
+          <span class="contact-action">Enviar correo ↗</span>
+        </a>
+
+        <!-- GitHub -->
+        <a href="https://github.com/jarvisbot01" target="_blank" rel="noopener noreferrer" class="contact-card">
+          <div class="contact-logo-box">
+            <img src="assets/GitHub.png" alt="Logo de GitHub" class="contact-logo" loading="lazy">
+          </div>
+          <h3 class="contact-title">GitHub</h3>
+          <p class="contact-desc">@jarvisbot01</p>
+          <span class="contact-action">Ver repositorios ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Sección de Mis Trabajos -->
+    <section class="projects-section">
+      <div class="section-header">
+        <h2>Mis <span class="highlight">Trabajos</span></h2>
+        <p>Explora mis proyectos activos de frontend y backend</p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Trabajo Frontend -->
+        <article class="project-card">
+          <div class="project-img-wrapper">
+            <span class="project-category-tag tag-frontend">Frontend</span>
+            <img src="assets/Frontend.png" alt="Captura del proyecto Frontend" class="project-img" loading="lazy">
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">
+              <span>Frontend App</span>
+            </h3>
+            <p class="project-description">
+              Interfaz web interactiva y moderna con experiencia de usuario optimizada, diseño responsivo y arquitectura
+              modular.
+            </p>
+            <div class="project-footer">
+              <a href="https://frontend.josedaniel.online" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                frontend.josedaniel.online ↗
+              </a>
+              <a href="https://frontend.josedaniel.online" target="_blank" rel="noopener noreferrer"
+                class="project-btn">
+                Visitar sitio
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Trabajo Backend -->
+        <article class="project-card">
+          <div class="project-img-wrapper">
+            <span class="project-category-tag tag-backend">Backend</span>
+            <img src="assets/Backend.png" alt="Captura del proyecto Backend" class="project-img" loading="lazy">
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">
+              <span>Backend Services</span>
+            </h3>
+            <p class="project-description">
+              Servicios backend robustos, APIs RESTful escalables, gestión de base de datos y procesamiento en el
+              servidor.
+            </p>
+            <div class="project-footer">
+              <a href="https://backend.josedaniel.online/docs" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                backend.josedaniel.online ↗
+              </a>
+              <a href="https://backend.josedaniel.online/docs" target="_blank" rel="noopener noreferrer"
+                class="project-btn">
+                Visitar API
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>Creado con HTML, CSS y JavaScript nativo</p>
+    </footer>
+  </main>
+
+  <script>
+    let count = 0;
+    const btn = document.getElementById('btn-interact');
+    const counter = document.getElementById('click-counter');
+
+    btn.addEventListener('click', () => {
+      count++;
+      counter.textContent = count;
+      btn.style.transform = 'scale(0.96)';
+      setTimeout(() => btn.style.transform = '', 100);
+    });
+  </script>
+</body>
+
+</html>

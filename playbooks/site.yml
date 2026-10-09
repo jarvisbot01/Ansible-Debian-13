@@ -1,0 +1,120 @@
+---
+- name: Configurar servidor Debian 13 con Nginx, Docker, Compose y Buildx
+  hosts: webservers
+  become: true
+
+  vars_files:
+    - "{{ playbook_dir }}/../vault.yml"
+
+  tasks:
+
+    - name: Actualizar paquetes de apt
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: true
+
+    - name: Instalar paquetes esenciales
+      ansible.builtin.apt:
+        name:
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: Instalar Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Descargar script oficial de instalación de Docker
+      ansible.builtin.get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: '0750'
+
+    - name: Ejecutar script oficial de instalación de Docker
+      ansible.builtin.command:
+        cmd: /tmp/get-docker.sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: Limpiar archivo temporal de instalación
+      ansible.builtin.file:
+        path: /tmp/get-docker.sh
+        state: absent
+
+    - name: Asegurar instalación de plugins oficiales (docker-compose-plugin y docker-buildx-plugin)
+      ansible.builtin.apt:
+        name:
+          - docker-compose-plugin
+          - docker-buildx-plugin
+        state: present
+        update_cache: true
+
+    - name: Asegurar existencia del grupo docker
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Agregar el usuario de conexión actual al grupo docker
+      ansible.builtin.user:
+        name: "{{ ansible_user | default(ansible_env.USER) }}"
+        groups: docker
+        append: true
+
+    - name: Iniciar y habilitar Nginx en systemd
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+      register: nginx_status
+
+    - name: Iniciar y habilitar Docker en systemd
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+      register: docker_status
+
+    - name: Validar que Nginx esté activo
+      ansible.builtin.assert:
+        that:
+          - nginx_status.status.ActiveState == "active"
+        fail_msg: "El servicio Nginx no se encuentra activo."
+
+    - name: Validar que Docker esté activo
+      ansible.builtin.assert:
+        that:
+          - docker_status.status.ActiveState == "active"
+        fail_msg: "El servicio Docker no se encuentra activo."
+
+    - name: Verificar versiones de plugins instalados
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+      loop:
+        - "docker compose version"
+        - "docker buildx version"
+      register: plugins_check
+      changed_when: false
+
+    - name: Mostrar versiones detectadas
+      ansible.builtin.debug:
+        msg: "{{ item.stdout }}"
+      loop: "{{ plugins_check.results }}"
+
+    - name: Copiar index.html al directorio web de Nginx
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Copiar directorio assets al directorio web de Nginx
+      ansible.builtin.copy:
+        src: assets/
+        dest: /var/www/html/assets/
+        owner: www-data
+        group: www-data
+        directory_mode: '0755'
+        mode: '0644'
